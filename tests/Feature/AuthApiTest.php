@@ -159,9 +159,8 @@ describe('restful api authentication flow', function () {
 
         $user = User::factory()->create();
 
-        $response = postJson('/api/forgot-password', ['email' => $user->email]);
-
-        $response->assertOk()
+        postJson('/api/forgot-password', ['email' => $user->email])
+            ->assertOk()
             ->assertJson(['message' => 'Reset link sent to your email.']);
 
         Notification::assertSentTo($user, ResetPassword::class);
@@ -173,14 +172,13 @@ describe('restful api authentication flow', function () {
         $user = User::factory()->create();
         $token = Password::createToken($user);
 
-        $response = postJson('/api/reset-password', [
+        postJson('/api/reset-password', [
             'email' => $user->email,
             'token' => $token,
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
-        ]);
+        ])->assertOk();
 
-        $response->assertOk();
         expect(Hash::check('new-password', $user->fresh()->password));
         Event::assertDispatched(PasswordReset::class);
     });

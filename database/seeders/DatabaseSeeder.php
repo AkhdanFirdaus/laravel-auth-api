@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Todo;
 use App\Models\User;
 use App\Models\UserCredential;
 use App\Models\UserProfile;
@@ -19,11 +20,8 @@ class DatabaseSeeder extends Seeder
             UserProfile::factory()->for($user)->create();
             UserCredential::factory()->for($user)->emailCredential($user->email)->create();
             UserCredential::factory()->for($user)->phoneCredential()->create();
+
+            Todo::factory(3)->for($user)->create();
         });
-        // User::factory(5)
-        //     ->has(UserProfile::factory())
-        //     ->has(UserCredential::factory()->emailCredential())
-        //     ->has(UserCredential::factory()->phoneCredential())
-        //     ->create();
     }
 }

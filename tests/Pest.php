@@ -11,6 +11,12 @@
 |
 */
 
+use App\Models\User;
+use App\Models\UserCredential;
+use App\Models\UserProfile;
+
+use function Pest\Laravel\postJson;
+
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
@@ -41,7 +47,26 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function initiateUser()
 {
-    // ..
+    $user = User::factory()->create(['email' => 'a@a.com']);
+    UserCredential::factory()->for($user)->emailCredential('a@a.com')->create();
+    UserProfile::factory()->for($user)->create();
 }
+
+function getToken()
+{
+    initiateUser();
+
+    $loginResponse = postJson('/api/login', [
+        'type' => 'email',
+        'identifier' => 'a@a.com',
+        'password' => 'password',
+    ]);
+
+    $token = $loginResponse->json('token');
+
+    return $token;
+}
+
+function initiateTodo() {}
